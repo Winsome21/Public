@@ -117,7 +117,7 @@ def check_expected_field_values(rule,fields):
 def fix_expected_fields(fields):
     fields = {k.lower(): v for k, v in fields.items()}
     required_fields = ['actor_types','author','category','creation_date','description','first_imported','hash','last_modified','malware','malware_type','reference','sharing','status','version']
-    default_fields = {'actor_types':'CRIMEWARE', 'category':'malware', 'malware_type':'TROJAN', 'sharing':'TLP:AMBER', 'status':'RELEASED'}
+    default_fields = {'actor_types':'CRIMEWARE', 'category':'malware', 'malware_type':'TROJAN', 'sharing':'TLP:AMBER', 'status':'TESTING'}
     valid_values = {'actor_types': ['APT','CRIMEWARE','FIN'],
                     'category': ['info','exploit','technique','tool','malware'],
                     'malware_type': ["ADWARE","APT","BACKDOOR","BANKER","BOOTKIT","BOT","BROWSER-HIJACKER","BRUTEFORCER","CLICKFRAUD","CRYPTOMINER","DDOS","DOWNLOADER","DROPPER","EXPLOITKIT","FAKEAV","HACKTOOL","INFOSTEALER","KEYLOGGER","LOADER","OBFUSCATOR","POS","PROXY","RAT","RANSOMWARE","REVERSE-PROXY","ROOTKIT","SCANNER","SCAREWARE","SPAMMER","TROJAN","VIRUS","WIPER","WEBSHELL","WORM"],
