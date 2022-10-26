@@ -1,8 +1,34 @@
 #!/usr/bin/python3
 
-from re import findall, sub, search, compile as recompile, MULTILINE as multiline
+from re import findall, sub, search, compile as recompile, MULTILINE as multiline, split
 from datetime import date
 import argparse
+
+default_fields = {'actor_types':'CRIMEWARE',
+                'category':'malware',
+                'malware_type':'TROJAN',
+                'sharing':'TLP:AMBER',
+                'status':'TESTING',
+                'version':'1.0'}
+
+required_fields = ['actor_types','author','category','creation_date',
+                'description','first_imported','hash','last_modified',
+                'malware','malware_type','reference','sharing',
+                'status','version']
+
+valid_values = {'actor_types': ['APT','CRIMEWARE','FIN'],
+                    'category': ['info','exploit','technique','tool','malware'],
+                    'malware_type': ["ADWARE","APT","BACKDOOR","BANKER",
+                      "BOOTKIT","BOT","BROWSER-HIJACKER",
+                      "BRUTEFORCER","CLICKFRAUD","CRYPTOMINER",
+                      "DDOS","DOWNLOADER","DROPPER","EXPLOITKIT",
+                      "FAKEAV","HACKTOOL","INFOSTEALER","KEYLOGGER",
+                      "LOADER","OBFUSCATOR","POS","PROXY","RAT",
+                      "RANSOMWARE","REVERSE-PROXY","ROOTKIT","SCANNER",
+                      "SCAREWARE","SPAMMER","TROJAN","VIRUS","WIPER",
+                      "WEBSHELL","WORM"],
+                    'sharing': ['TLP:WHITE','TLP:GREEN','TLP:AMBER'],
+                    'status': ['TESTING','RELEASED','DEPRECATED']}
 
 def get_args():
     parser = argparse.ArgumentParser(description='Attempt to fix and provide feedback on yara rule metadata.')
@@ -37,13 +63,7 @@ def check_expected_field_values(rule,fields):
     passed = 'Passed'
     prep_report = ""
     fields = {k.lower(): v for k, v in fields.items()}
-    required_fields = ['actor_types','author','category','creation_date','description','first_imported','hash','last_modified','malware','malware_type','reference','sharing','status','version']
-    valid_values = {'actor_types': ['APT','CRIMEWARE','FIN'],
-                    'category': ['info','exploit','technique','tool','malware'],
-                    'malware_type': ["ADWARE","APT","BACKDOOR","BANKER","BOOTKIT","BOT","BROWSER-HIJACKER","BRUTEFORCER","CLICKFRAUD","CRYPTOMINER","DDOS","DOWNLOADER","DROPPER","EXPLOITKIT","FAKEAV","HACKTOOL","INFOSTEALER","KEYLOGGER","LOADER","OBFUSCATOR","POS","PROXY","RAT","RANSOMWARE","REVERSE-PROXY","ROOTKIT","SCANNER","SCAREWARE","SPAMMER","TROJAN","VIRUS","WIPER","WEBSHELL","WORM"],
-                    'sharing': ['TLP:WHITE','TLP:GREEN','TLP:AMBER'],
-                    'status': ['TESTING','RELEASED','DEPRECATED']}
-    
+        
     for required_field in required_fields:
         if not required_field in fields:
             fields[required_field] = ""
@@ -115,14 +135,12 @@ def check_expected_field_values(rule,fields):
     return report,sorted_fields
 
 def fix_expected_fields(fields):
-    fields = {k.lower(): v for k, v in fields.items()}
-    required_fields = ['actor_types','author','category','creation_date','description','first_imported','hash','last_modified','malware','malware_type','reference','sharing','status','version']
-    default_fields = {'actor_types':'CRIMEWARE', 'category':'malware', 'malware_type':'TROJAN', 'sharing':'TLP:AMBER', 'status':'TESTING'}
-    valid_values = {'actor_types': ['APT','CRIMEWARE','FIN'],
-                    'category': ['info','exploit','technique','tool','malware'],
-                    'malware_type': ["ADWARE","APT","BACKDOOR","BANKER","BOOTKIT","BOT","BROWSER-HIJACKER","BRUTEFORCER","CLICKFRAUD","CRYPTOMINER","DDOS","DOWNLOADER","DROPPER","EXPLOITKIT","FAKEAV","HACKTOOL","INFOSTEALER","KEYLOGGER","LOADER","OBFUSCATOR","POS","PROXY","RAT","RANSOMWARE","REVERSE-PROXY","ROOTKIT","SCANNER","SCAREWARE","SPAMMER","TROJAN","VIRUS","WIPER","WEBSHELL","WORM"],
-                    'sharing': ['TLP:WHITE','TLP:GREEN','TLP:AMBER'],
-                    'status': ['TESTING','RELEASED','DEPRECATED']}
+    fields = {k.lower(): v for k, v in fields.items()}    
+
+    #Create empty required fields if missing.
+    for required_field in required_fields:
+        if not required_field in fields:
+            fields[required_field] = ""
 
     #Check required fields, add required fields if missing, and add default values to them.
     for required_field in required_fields:
@@ -134,11 +152,6 @@ def fix_expected_fields(fields):
             fields[required_field] = default_fields[required_field]
         else:
             continue
-    
-    #Create empty required fields if missing.
-    for required_field in required_fields:
-        if not required_field in fields:
-            fields[required_field] = ""
     
     #Check author
     if len(fields['author'])>0 and not bool(findall('\@',fields['author'])):
@@ -172,10 +185,6 @@ def fix_expected_fields(fields):
     if len(fields['hash'])>0 and not len(fields['reference'])>0:
         fields['reference'] = 'https://www.virustotal.com/gui/file/{}'.format(fields['hash'])
     
-    #Check version
-    if not len(fields['version'])>0:
-        fields['version'] = "1.0"
-    
     sorted_fields = dict(sorted(fields.items()))
     return sorted_fields
 
@@ -187,7 +196,8 @@ def main(rule):
     find_strings = search('strings:',rule)
     make_list = ""
     for key,value in fixed_fields.items():
-        make_list += '\n        {} = \"{}\"'.format(key,value)
+        if not key[0] == '$':
+            make_list += '\n        {} = \"{}\"'.format(key,value)
     make_list += '\n'
     new_rule = rule.replace(rule[find_meta.end():find_strings.start()-4],make_list)
     new_rule += '\n\n'
@@ -195,8 +205,10 @@ def main(rule):
 
 if __name__ == "__main__":
     args = get_args()
-    yara_rules = open(args.file).read().split('\n\n')
+    yara_rules = split('\n\n(?=rule)',open(args.file).read())
     rule_ready = ""
+    if 'import' in yara_rules[0]:
+        rule_ready += yara_rules[0] + '\n\n'
     report_ready = ""
     for count,rule in enumerate(yara_rules):
         try:
