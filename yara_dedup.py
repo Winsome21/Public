@@ -55,13 +55,18 @@ if __name__ == '__main__':
     yara_rules = open(args.file,'r').read()
     print('Opening "{}"'.format(args.file))
     rules_deduped = ''
+    imports = findall('^import [^\n]+',yara_rules)
+    for item in list(set(imports)):
+        rules_deduped += (item + '\n')
+    if len(imports)>0:
+        rules_deduped += '\n'
     if args.mode == 'dedup':
         print('Processing Yara Rules')
-        rules_deduped = regex_rules_dedup(yara_rules)
+        rules_deduped += regex_rules_dedup(yara_rules)
     elif args.mode == 'remove':
         try:
             rules_list = open(args.list,'r').read().split('\n')
-            rules_deduped = regex_rules_remove(yara_rules,rules_list)
+            rules_deduped += regex_rules_remove(yara_rules,rules_list)
         except:
             print('Please provide yara rules file with -f and a list of rule names to check against with -l')
     else:
