@@ -5,7 +5,7 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser(description='Create smaller batches of yara rules for testing.')
     parser.add_argument('-f','--file', help='Yara rule file to process', required=True)
-    parser.add_argument('-o','--output', help='Output processed yara rules to this file', required=True)
+    parser.add_argument('-o','--output', help='Output processed yara rules to this folder', required=True)
     parser.add_argument('-b','--batch', help='Batch size of yara rules to write to each file', type=int, required=False, default='300')
     return(parser.parse_args())
 
