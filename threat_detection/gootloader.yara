@@ -1,5 +1,14 @@
 rule gootloader_zip
 {
+    meta:
+        description = "Detects ZIP file associated with Gootloader malware"
+        author = "Joseph Freeman (https://www.linkedin.com/in/josephafreeman/)"
+        date = "2024-05-12"
+        hash1 = "8e92bb681a773da3dc1a6e2e12a2fead"
+        hash2 = "f7ddadffa61d6a1edbbb406823f34ded"
+        malware_family = "Gootloader"
+        malware_type = "Downloader"
+        actors = "UNC2565"
     strings:
         $r1 = /((\(|\s|\[|\{)\d{3,6}(\)|\s|\]|\})?|\([a-zA-Z]{2,5}\))\.js/
         $s1 = "agree" ascii wide nocase
