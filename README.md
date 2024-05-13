@@ -22,4 +22,5 @@ Welcome to my cybersecurity portfolio! This repository showcases my skills, proj
 - Swimlane Turbine Administrator
 - AWS Certified Solutions Architect Associate (Expired)
 
+## Contact
 LinkedIn: https://www.linkedin.com/in/josephafreeman/
