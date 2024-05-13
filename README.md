@@ -1,5 +1,5 @@
 ## Cybersecurity Portfolio
-Welcome to my cybersecurity portfolio! This repository showcases my skills, projects, and experiences as a seasoned cybersecurity professional. With a strong background in security automation, threat detection, and malware analysis I am well-equipped to tackle complex security challenges and contribute to the protection of critical digital assets.
+Welcome to my cybersecurity portfolio! This repository showcases my skills, projects, and experiences as a seasoned cybersecurity professional. With a strong background in programming, security automation, threat detection, and malware analysis I am well-equipped to tackle complex security challenges and contribute to the protection of critical digital assets.
 
 ## Skills
 - Programming (Python, JavaScript, Go (Golang), SQL, Bash, and PowerShell)
