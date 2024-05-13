@@ -2,10 +2,11 @@
 Welcome to my cybersecurity portfolio! This repository showcases my skills, projects, and experiences as a seasoned cybersecurity professional. With a strong background in security automation, threat detection, and malware analysis I am well-equipped to tackle complex security challenges and contribute to the protection of critical digital assets.
 
 ## Skills
+- Programming (Python, JavaScript, Go (Golang), SQL, Bash, and PowerShell)
 - Incident Response and Forensics
 - Malware Analysis and Reverse Engineering
 - Threat Hunting and Intelligence
-- Security Automation and Scripting (Python, JavaScript, Go)
+- Security Automation 
 - Network Security and Packet Analysis
 - Cloud Security (AWS, Azure, GCP)
 - Vulnerability Assessment and Penetration Testing
